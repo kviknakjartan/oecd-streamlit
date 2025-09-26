@@ -32,11 +32,16 @@ with col2:
         value=[min_value, max_value]
     )
 
-selected_countries = st.multiselect(
-    'Select Countries',
-    fetcher.getCountries(selected_indicator),
-    placeholder = "Choose at least one"
-)
+col1, col2 = st.columns([6,1])
+
+with col1:
+    selected_countries = st.multiselect(
+        'Select Countries',
+        fetcher.getCountries(selected_indicator),
+        placeholder = "Choose at least one"
+    )
+with col2:
+    euro_on = st.checkbox("Show when Euro adapted (as of 2025)")
 
 country_data = fetcher.getCountryData(selected_indicator, selected_countries)
 
@@ -51,6 +56,24 @@ for country in selected_countries:
             'Value: %{y:.1f}'+
             '<br>Year: %{x:.0f}')
     )
+    if euro_on:
+        euro_date = fetcher.getEuroYear(country)
+        if euro_date is not None:
+            print(euro_date,country_data.loc[(country_data['Reference area'] == country) & \
+                        (country_data['TIME_PERIOD'] == euro_date), 'OBS_VALUE'])
+            p.add_trace(
+                go.Scatter(x=[euro_date], \
+                    y=country_data.loc[(country_data['Reference area'] == country) & \
+                        (country_data['TIME_PERIOD'] == euro_date), 'OBS_VALUE'], 
+                    name=f'{country}_euro',
+                    hoverinfo='skip',
+                    showlegend=False,
+                    mode='markers',
+                    marker=dict(
+                                size=10,
+                                color='gold',
+                                symbol='diamond'))
+            )
 p.update_layout(
         xaxis=dict(range=[from_year, to_year]),
         legend=dict(
@@ -67,4 +90,5 @@ p.update_xaxes(title_text="Year")
 # Set y-axes title
 p.update_yaxes(title_text=fetcher.getUnit(selected_indicator))
 st.plotly_chart(p, use_container_width=True)
+
 

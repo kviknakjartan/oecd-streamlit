@@ -241,6 +241,9 @@ class DataFetcher():
 
     def getLinkName(self, indicator):
         return self.dataDict[indicator]['link_name']
+
+    def getEuroYear(self, country):
+        return self.euroDict.get(country, None)
         
 
 
