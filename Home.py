@@ -15,23 +15,29 @@ st.set_page_config(
 
 fetcher = DataFetcher()
 
-selected_indicator = st.selectbox("Choose an indicator:", fetcher.getIndicators())
+col1, col2 = st.columns(2)
+
+with col1:
+    selected_indicator = st.selectbox("Choose an indicator:", fetcher.getIndicators())
 
 fetcher.updateData(selected_indicator)
 
-selected_countries = st.multiselect(
-    'Select Countries',
-    fetcher.getCountries(selected_indicator)
-)
-
 min_value, max_value = fetcher.getMinMaxYear(selected_indicator)
 
-from_year, to_year = st.slider(
-    'Which years are you interested in?',
-    min_value=min_value,
-    max_value=max_value,
-    value=[min_value, max_value]
+with col2:
+    from_year, to_year = st.slider(
+        'Which years are you interested in?',
+        min_value=min_value,
+        max_value=max_value,
+        value=[min_value, max_value]
+    )
+
+selected_countries = st.multiselect(
+    'Select Countries',
+    fetcher.getCountries(selected_indicator),
+    placeholder = "Choose at least one"
 )
+
 country_data = fetcher.getCountryData(selected_indicator, selected_countries)
 
 # Create figure
