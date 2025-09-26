@@ -55,5 +55,10 @@ p.update_layout(
             orientation = 'h'
     )
 )
+# Set x-axis title
+p.update_xaxes(title_text="Year")
+
+# Set y-axes title
+p.update_yaxes(title_text=fetcher.getUnit(selected_indicator))
 st.plotly_chart(p, use_container_width=True)
 

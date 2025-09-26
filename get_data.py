@@ -232,6 +232,15 @@ class DataFetcher():
         minYear = df['TIME_PERIOD'].unique().min()
         maxYear = df['TIME_PERIOD'].unique().max()
         return minYear, maxYear
+
+    def getUnit(self, indicator):
+        return self.dataDict[indicator]['unit']
+
+    def getLink(self, indicator):
+        return self.dataDict[indicator]['link']
+
+    def getLinkName(self, indicator):
+        return self.dataDict[indicator]['link_name']
         
 
 
