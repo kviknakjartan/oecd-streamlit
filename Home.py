@@ -29,21 +29,24 @@ with col1:
 fetcher.updateData(selected_indicator)
 # Set year range
 min_value, max_value = fetcher.getMinMaxYear(selected_indicator)
-# Initialize session state 
-if 'years' not in st.session_state:
-    st.session_state['years'] = (min_value, max_value)
+
 # Set year range
 with col2:
     from_year, to_year = st.slider(
         'Which years are you interested in?',
         min_value=min_value,
         max_value=max_value,
-        value=[max(min_value, st.session_state['years'][0]), min(max_value, st.session_state['years'][1])]
+        value=[min_value, max_value]
     )
-# Save selected years in session state for next run
-st.session_state['years'] = (from_year, to_year)
 
 ############################# Second row: select countries and checkbox for showing when euro was adopted on plot
+def update_countries():
+    # Update permanent key-value pair from temporary one.
+    st.session_state.countries = st.session_state.temp_countries
+
+# Get value for widget from permanent key.
+st.session_state.temp_countries = st.session_state.countries
+
 col1, col2 = st.columns([6,1])
 # Multiselect countries
 with col1:
@@ -51,10 +54,9 @@ with col1:
         'Select Countries',
         fetcher.getCountries(selected_indicator),
         placeholder = "Choose at least one",
-        default = st.session_state['countries']
+        key="temp_countries", 
+        on_change=update_countries
     )
-# Save selected countries in session state for next fun
-st.session_state['countries'] = selected_countries
 # Euro checkbox
 with col2:
     euro_on = st.checkbox("Show when Euro adapted (as of 2025)")
