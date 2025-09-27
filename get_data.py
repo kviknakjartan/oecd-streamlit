@@ -210,7 +210,7 @@ class DataFetcher():
                         }
 
         self.testing = False           
-
+    # If data hasn't been downloaded before then download and distribute it between corresponding indicators
     def updateData(self, new_measure):
         if 'data' in self.dataDict[new_measure].keys():
             return
@@ -222,6 +222,7 @@ class DataFetcher():
         batchData = self.getBatch(url).sort_values(by='TIME_PERIOD')
         self.distributeBatch(batchName, batchData)
 
+    # Distribute downloaded batch between indicators
     def distributeBatch(self, batchName, batchData):
         indicators = [key for key in self.dataDict.keys() if self.dataDict[key]['batch'] == batchName]
         for i in indicators:
@@ -231,7 +232,8 @@ class DataFetcher():
                 self.dataDict[i]['data'] = batchData[batchData['EXPENDITURE'] == self.dataDict[i]['expenditure']]
             else:
                 self.dataDict[i]['data'] = batchData[batchData['MEASURE'] == self.dataDict[i]['measure']]
-     
+    
+    # Download data
     def getBatch(self, url):
         if self.testing:
             df = pd.read_csv(url)

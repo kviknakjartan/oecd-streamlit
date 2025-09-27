@@ -18,18 +18,21 @@ st.set_page_config(
 
 fetcher = DataFetcher()
 
+############################# Top row: indicator selection and year range selection
 col1, col2 = st.columns([3,1])
 
 with col1:
+    # Select indicator
     selected_indicator = st.selectbox("Choose an indicator:", fetcher.getIndicators())
 
+# Download data from OECD for selected indicator if it hasn't been done before
 fetcher.updateData(selected_indicator)
-
+# Set year range
 min_value, max_value = fetcher.getMinMaxYear(selected_indicator)
-
+# Initialize session state 
 if 'years' not in st.session_state:
     st.session_state['years'] = (min_value, max_value)
-
+# Set year range
 with col2:
     from_year, to_year = st.slider(
         'Which years are you interested in?',
@@ -37,10 +40,12 @@ with col2:
         max_value=max_value,
         value=[max(min_value, st.session_state['years'][0]), min(max_value, st.session_state['years'][1])]
     )
+# Save selected years in session state for next run
 st.session_state['years'] = (from_year, to_year)
 
+############################# Second row: select countries and checkbox for showing when euro was adopted on plot
 col1, col2 = st.columns([6,1])
-
+# Multiselect countries
 with col1:
     selected_countries = st.multiselect(
         'Select Countries',
@@ -48,28 +53,33 @@ with col1:
         placeholder = "Choose at least one",
         default = st.session_state['countries']
     )
+# Save selected countries in session state for next fun
 st.session_state['countries'] = selected_countries
-
+# Euro checkbox
 with col2:
     euro_on = st.checkbox("Show when Euro adapted (as of 2025)")
 
+############################### Plot the data
+# Get data for selected indicator and selected countries
 country_data = fetcher.getCountryData(selected_indicator, selected_countries)
 
 # Create figure
 p = make_subplots()
-
+# Unit symbol to show with hover data
 unit_symbol = fetcher.getUnitSymbol(selected_indicator)
 if unit_symbol is None:
     hover = 'Value: %{y:.1f}'+'<br>Year: %{x:.0f}'
 else:
     hover = 'Value: %{y:.1f}'+unit_symbol+'<br>Year: %{x:.0f}'
+
 for country in selected_countries:
-    # Add traces
+    # Add trace for each selected country
     p.add_trace(
         go.Scatter(x=country_data.loc[country_data['Reference area'] == country, 'TIME_PERIOD'], \
             y=country_data.loc[country_data['Reference area'] == country, 'OBS_VALUE'], name=country,
             hovertemplate = hover)
     )
+    # Show if and when euro was adopted by country
     if euro_on:
         euro_date = fetcher.getEuroYear(country)
         if euro_date is not None:
@@ -86,6 +96,7 @@ for country in selected_countries:
                                 color='gold',
                                 symbol='diamond'))
             )
+# Set x-axis range and configure legend
 p.update_layout(
         xaxis=dict(range=[from_year, to_year]),
         legend=dict(
