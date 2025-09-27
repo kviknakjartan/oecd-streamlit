@@ -7,7 +7,7 @@ from io import StringIO, BytesIO
 
 class DataFetcher():
     def __init__(self):
-        self.batchDict = {'naag_ch1' : {'url' : "https://sdmx.oecd.org/public/rest/data/OECD.SDD.NAD,DSD_NAAG@DF_NAAG_I,/A.ZAF+IDN+IND+CHN+BRA+OECD+EU+EA+AUS+AUT+BEL+CAN+CHL+COL+CRI+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LTU+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA.B1GQ_R_POP.USD_PPP_PS.?startPeriod=1925&dimensionAtObservation=AllDimensions&format=csvfilewithlabels",
+        self.batchDict = {'naag_ch1' : {'url' : "https://sdmx.oecd.org/public/rest/data/OECD.SDD.NAD,DSD_NAAG@DF_NAAG_I,/A.ZAF+IDN+IND+CHN+BRA+OECD+EU+EA+AUS+AUT+BEL+CAN+CHL+COL+CRI+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LTU+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA.B1GQ_R_POP+B1GQ_R_GR.USD_PPP_PS+PC.?startPeriod=1925&dimensionAtObservation=AllDimensions&format=csvfilewithlabels",
                                         'test_file': "OECD - GDP data.csv"},
                           'naag_ch2' : {'url' : "https://sdmx.oecd.org/public/rest/data/OECD.SDD.NAD,DSD_NAAG@DF_NAAG_II,1.0/A.ZAF+EU+EA+AUS+AUT+BEL+CAN+CHL+COL+CRI+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LTU+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA.B5N_R.IX.?startPeriod=1925&dimensionAtObservation=AllDimensions&format=csvfilewithlabels",
                                         'test_file': "OECD - income data.csv"},
@@ -33,6 +33,11 @@ class DataFetcher():
         self.dataDict = { 'GDP: Real gross domestic product per capita' : {'batch' : "naag_ch1",
                                                             'measure' : "B1GQ_R_POP",
                                                             'unit' : 'US dollars per person, PPP converted',
+                                                            'link' : "https://www.oecd.org/en/data/indicators/real-gross-domestic-product-gdp.html",
+                                                            'link_name' : 'Real Gross Domestic Product (GDP)'}, 
+                     'GDP: Real gross domestic product growth rate' : {'batch' : "naag_ch1",
+                                                            'measure' : "B1GQ_R_GR",
+                                                            'unit' : 'Percentage change',
                                                             'link' : "https://www.oecd.org/en/data/indicators/real-gross-domestic-product-gdp.html",
                                                             'link_name' : 'Real Gross Domestic Product (GDP)'}, 
                      'Income: Real net national income' : {'batch' : "naag_ch2",
@@ -106,8 +111,8 @@ class DataFetcher():
                      'Government: Net lending(+)/net borrowing(-) of general government' : {'batch' : "naag_ch6",
                                                             'measure' : "B9S13",
                                                             'unit' : 'Percentage of GDP',
-                                                            'link' : None,
-                                                            'link_name' : None},
+                                                            'link' : 'https://www.oecd.org/en/data/indicators/net-lendingborrowing-by-sector.html',
+                                                            'link_name' : 'Net lending/borrowing by sector'},
                      'Government: Expenditure of general government (General public services)' : {'batch' : "naag_ch6a",
                                                             'measure' : "B1GQ_R_POP",
                                                             'expenditure' : "GF01",
@@ -118,20 +123,20 @@ class DataFetcher():
                                                             'measure' : "B1GQ_R_POP",
                                                             'expenditure' : "GF02",
                                                             'unit' : 'Percentage of GDP',
-                                                            'link' : None,
-                                                            'link_name' : None},
+                                                            'link' : 'https://www.oecd.org/en/data/indicators/general-government-spending-by-destination.html',
+                                                            'link_name' : 'General government spending by destination'},
                      'Government: Expenditure of general government (Health)' : {'batch' : "naag_ch6a",
                                                             'measure' : "B1GQ_R_POP",
                                                             'expenditure' : "GF07",
                                                             'unit' : 'Percentage of GDP',
-                                                            'link' : None,
-                                                            'link_name' : None},
+                                                            'link' : 'https://www.oecd.org/en/data/indicators/general-government-spending-by-destination.html',
+                                                            'link_name' : 'General government spending by destination'},
                      'Government: Expenditure of general government (Education)' : {'batch' : "naag_ch6a",
                                                             'measure' : "B1GQ_R_POP",
                                                             'expenditure' : "GF09",
                                                             'unit' : 'Percentage of GDP',
-                                                            'link' : None,
-                                                            'link_name' : None},
+                                                            'link' : 'https://www.oecd.org/en/data/indicators/general-government-spending-by-destination.html',
+                                                            'link_name' : 'General government spending by destination'},
                      'Corporations: Debt to gross operating surplus ratio of non-financial corporations' : {'batch' : "naag_ch7",
                                                             'measure' : "LES11_FD4_B2G",
                                                             'unit' : 'Factor of gross operating surplus',
@@ -150,13 +155,13 @@ class DataFetcher():
                      'Employment: Unemployment rate' : {'batch' : "unempl",
                                                             'measure' : "UNE_LF_M",
                                                             'unit' : 'Percentage of labour force',
-                                                            'link' : None,
-                                                            'link_name' : None},
+                                                            'link' : 'https://www.oecd.org/en/data/indicators/unemployment-rate.html',
+                                                            'link_name' : 'Unemployment rate'},
                      'Trade: Net exports of goods and services contribution to GDP growth' : {'batch' : "naag_ch3a",
                                                             'measure' : "B11_CG",
                                                             'unit' : 'Percentage points',
-                                                            'link' : None,
-                                                            'link_name' : None}
+                                                            'link' : 'https://www.oecd.org/en/data/indicators/trade-in-goods-and-services-forecast.html',
+                                                            'link_name' : 'Trade in goods and services'}
                     }
         self.euroDict = {
                         'Austria' : 1999,
@@ -181,7 +186,7 @@ class DataFetcher():
                         'Spain' : 1999
                         }
 
-        self.testing = True           
+        self.testing = False           
 
     def updateData(self, new_measure):
         if 'data' in self.dataDict[new_measure].keys():

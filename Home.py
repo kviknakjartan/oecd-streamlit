@@ -97,6 +97,20 @@ p.update_xaxes(title_text="Year")
 
 # Set y-axes title
 p.update_yaxes(title_text=fetcher.getUnit(selected_indicator))
+
+# Add an annotation to act as a clickable link
+p.add_annotation(
+    text=f"<a href='{fetcher.getLink(selected_indicator)}'>{selected_indicator}</a>", # The text displayed for the link
+    xref="paper", yref="paper",
+    x=0.50, y=1.30, # Position relative to the plot area
+    showarrow=False,
+    font=dict(color="blue", size=24),
+    align="center"
+)
 st.plotly_chart(p, use_container_width=True)
+
+st.caption('Data from [https://data-explorer.oecd.org/](https://data-explorer.oecd.org/)')
+
+
 
 
