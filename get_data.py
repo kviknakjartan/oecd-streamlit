@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import numpy as np
 from io import StringIO, BytesIO
+from pathlib import Path
 
 
 class DataFetcher():
@@ -215,17 +216,16 @@ class DataFetcher():
         if 'data' in self.dataDict[new_measure].keys():
             return
         batchName = self.dataDict[new_measure]['batch']
-        if self.testing:
-            url = self.batchDict[batchName]['test_file']
-        else:
-            url = self.batchDict[batchName]['url']
-        batchData = self.getBatch(url).sort_values(by='TIME_PERIOD')
+        test_file = Path("data") / Path(self.batchDict[batchName]['test_file'])
+        url = self.batchDict[batchName]['url']
+        batchData = self.getBatch(url, test_file).sort_values(by='TIME_PERIOD')
         self.distributeBatch(batchName, batchData)
 
     # Distribute downloaded batch between indicators
     def distributeBatch(self, batchName, batchData):
         indicators = [key for key in self.dataDict.keys() if self.dataDict[key]['batch'] == batchName]
         for i in indicators:
+            # The key for each indicator can be in one of three possible columns
             if 'activity' in self.dataDict[i].keys():
                 self.dataDict[i]['data'] = batchData[batchData['ACTIVITY'] == self.dataDict[i]['activity']]
             elif 'expenditure' in self.dataDict[i].keys():
@@ -234,13 +234,17 @@ class DataFetcher():
                 self.dataDict[i]['data'] = batchData[batchData['MEASURE'] == self.dataDict[i]['measure']]
     
     # Download data
-    def getBatch(self, url):
+    def getBatch(self, url, testFile):
         if self.testing:
-            df = pd.read_csv(url)
+            df = pd.read_csv(testFile)
             return df
         # Fetch data
-        response = requests.get(url)
-        response.raise_for_status() # Raise an exception for HTTP errors
+        try:
+            response = requests.get(url)
+            response.raise_for_status() # Raise an exception for HTTP errors
+        except:
+            df = pd.read_csv(testFile)
+            return df
 
         # Read CSV data into a pandas DataFrame
         df = pd.read_csv(StringIO(response.text))
