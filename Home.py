@@ -5,6 +5,9 @@ from plotly.subplots import make_subplots
 
 from get_data import DataFetcher
 
+if 'countries' not in st.session_state:
+    st.session_state['countries'] = []
+
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
     page_title='OECD Dashboard',
@@ -15,7 +18,7 @@ st.set_page_config(
 
 fetcher = DataFetcher()
 
-col1, col2 = st.columns(2)
+col1, col2 = st.columns([3,1])
 
 with col1:
     selected_indicator = st.selectbox("Choose an indicator:", fetcher.getIndicators())
@@ -24,13 +27,17 @@ fetcher.updateData(selected_indicator)
 
 min_value, max_value = fetcher.getMinMaxYear(selected_indicator)
 
+if 'years' not in st.session_state:
+    st.session_state['years'] = (min_value, max_value)
+
 with col2:
     from_year, to_year = st.slider(
         'Which years are you interested in?',
         min_value=min_value,
         max_value=max_value,
-        value=[min_value, max_value]
+        value=[max(min_value, st.session_state['years'][0]), min(max_value, st.session_state['years'][1])]
     )
+st.session_state['years'] = (from_year, to_year)
 
 col1, col2 = st.columns([6,1])
 
@@ -38,8 +45,11 @@ with col1:
     selected_countries = st.multiselect(
         'Select Countries',
         fetcher.getCountries(selected_indicator),
-        placeholder = "Choose at least one"
+        placeholder = "Choose at least one",
+        default = st.session_state['countries']
     )
+st.session_state['countries'] = selected_countries
+
 with col2:
     euro_on = st.checkbox("Show when Euro adapted (as of 2025)")
 
@@ -59,8 +69,6 @@ for country in selected_countries:
     if euro_on:
         euro_date = fetcher.getEuroYear(country)
         if euro_date is not None:
-            print(euro_date,country_data.loc[(country_data['Reference area'] == country) & \
-                        (country_data['TIME_PERIOD'] == euro_date), 'OBS_VALUE'])
             p.add_trace(
                 go.Scatter(x=[euro_date], \
                     y=country_data.loc[(country_data['Reference area'] == country) & \
