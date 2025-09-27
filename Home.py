@@ -57,14 +57,18 @@ country_data = fetcher.getCountryData(selected_indicator, selected_countries)
 
 # Create figure
 p = make_subplots()
+
+unit_symbol = fetcher.getUnitSymbol(selected_indicator)
+if unit_symbol is None:
+    hover = 'Value: %{y:.1f}'+'<br>Year: %{x:.0f}'
+else:
+    hover = 'Value: %{y:.1f}'+unit_symbol+'<br>Year: %{x:.0f}'
 for country in selected_countries:
     # Add traces
     p.add_trace(
         go.Scatter(x=country_data.loc[country_data['Reference area'] == country, 'TIME_PERIOD'], \
             y=country_data.loc[country_data['Reference area'] == country, 'OBS_VALUE'], name=country,
-            hovertemplate =
-            'Value: %{y:.1f}'+
-            '<br>Year: %{x:.0f}')
+            hovertemplate = hover)
     )
     if euro_on:
         euro_date = fetcher.getEuroYear(country)
