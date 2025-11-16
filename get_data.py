@@ -42,6 +42,12 @@ class DataFetcher():
                                                             'link' : "https://www.oecd.org/en/data/indicators/real-gross-domestic-product-gdp.html",
                                                             'link_name' : 'Real Gross Domestic Product (GDP)',
                                                             'unit_symbol' : '%'}, 
+                     'GDP: Real gross domestic product per capita growth rate' : {'batch' : "naag_ch1",
+                                                            'measure' : "B1GQ_R_POP",
+                                                            'unit' : 'Percentage change (%)',
+                                                            'link' : "https://www.oecd.org/en/data/indicators/real-gross-domestic-product-gdp.html",
+                                                            'link_name' : 'Real Gross Domestic Product (GDP)',
+                                                            'unit_symbol' : '%'}, 
                      'Income: Real net national income' : {'batch' : "naag_ch2",
                                                             'measure' : "B5N_R",
                                                             'unit' : 'Index (2020)',
@@ -232,6 +238,13 @@ class DataFetcher():
                 self.dataDict[i]['data'] = batchData[batchData['EXPENDITURE'] == self.dataDict[i]['expenditure']]
             else:
                 self.dataDict[i]['data'] = batchData[batchData['MEASURE'] == self.dataDict[i]['measure']]
+            # Generate the percent change for gdp per capita
+            if i == 'GDP: Real gross domestic product per capita growth rate':
+                countries = self.getCountries(i)
+                for country in countries:
+                    obs = self.dataDict[i]['data'].loc[self.dataDict[i]['data']['Reference area'] == country, 'OBS_VALUE']
+                    self.dataDict[i]['data'].loc[self.dataDict[i]['data']['Reference area'] == country, 'OBS_VALUE'] = \
+                        100 * obs.pct_change()
     
     # Download data
     def getBatch(self, url, testFile):
