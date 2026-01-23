@@ -1,6 +1,6 @@
-pandas
-streamlit
-plotly
-requests
-numpy
-pathlib
+pandas==2.2.3
+streamlit==1.45.1
+plotly==6.5.0
+requests==2.32.3
+numpy==2.1.3
+pathlib==1.0.1
